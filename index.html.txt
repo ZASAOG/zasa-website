@@ -1,0 +1,1737 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZASA - Zanzibar Aerospace Students Association</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #1a2b5e;
+    --navy-dark: #0f1a3a;
+    --navy-light: #243570;
+    --orange: #e8762a;
+    --orange-light: #f08c45;
+    --sky: #4da6d8;
+    --sky-light: #6dbde8;
+    --white: #ffffff;
+    --gray-light: #f4f6fb;
+    --gray: #8a96b0;
+    --border: rgba(255,255,255,0.12);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Barlow', sans-serif;
+    background: var(--navy-dark);
+    color: var(--white);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ===== BACKGROUND ===== */
+  .bg-pattern {
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 50%, rgba(77,166,216,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(232,118,42,0.06) 0%, transparent 50%),
+      linear-gradient(135deg, #0a1228 0%, #0f1a3a 50%, #0a1228 100%);
+    z-index: 0;
+  }
+  .bg-grid {
+    position: fixed;
+    inset: 0;
+    background-image: linear-gradient(rgba(77,166,216,0.03) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(77,166,216,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    z-index: 0;
+  }
+
+  /* ===== APP WRAPPER ===== */
+  #app {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+  }
+
+  /* ===== PAGES ===== */
+  .page { display: none; min-height: 100vh; }
+  .page.active { display: flex; }
+
+  /* ===== LOGIN PAGE ===== */
+  #login-page {
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .login-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 48px 40px;
+    width: 100%;
+    max-width: 420px;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 40px 80px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08);
+    animation: slideUp 0.6s cubic-bezier(0.16,1,0.3,1);
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .login-logo {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  .logo-emblem {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--navy), var(--navy-light));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    border: 2px solid var(--sky);
+    box-shadow: 0 0 30px rgba(77,166,216,0.3);
+    font-size: 36px;
+    position: relative;
+    overflow: hidden;
+  }
+  .logo-emblem::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 50%;
+    background: conic-gradient(var(--orange), var(--sky), var(--orange));
+    z-index: -1;
+    animation: spin 8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .org-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: var(--white);
+    text-transform: uppercase;
+  }
+  .org-sub {
+    font-size: 11px;
+    color: var(--orange);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-top: 2px;
+    font-weight: 600;
+  }
+
+  .login-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 8px;
+    color: var(--white);
+  }
+  .login-subtitle {
+    text-align: center;
+    color: var(--gray);
+    font-size: 14px;
+    margin-bottom: 32px;
+  }
+
+  .form-group { margin-bottom: 18px; }
+  .form-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--sky);
+    margin-bottom: 8px;
+  }
+  .form-group input, .form-group select, .form-group textarea {
+    width: 100%;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    padding: 13px 16px;
+    color: var(--white);
+    font-family: 'Barlow', sans-serif;
+    font-size: 15px;
+    outline: none;
+    transition: all 0.3s;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    border-color: var(--sky);
+    background: rgba(77,166,216,0.08);
+    box-shadow: 0 0 0 3px rgba(77,166,216,0.15);
+  }
+  .form-group select option { background: var(--navy-dark); }
+  .form-group textarea { resize: vertical; min-height: 80px; }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 28px;
+    border-radius: 10px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: none;
+    transition: all 0.3s;
+    text-decoration: none;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--orange), var(--orange-light));
+    color: var(--white);
+    width: 100%;
+    box-shadow: 0 8px 24px rgba(232,118,42,0.35);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(232,118,42,0.45); }
+  .btn-sky {
+    background: linear-gradient(135deg, var(--sky), var(--sky-light));
+    color: var(--white);
+    box-shadow: 0 8px 24px rgba(77,166,216,0.3);
+  }
+  .btn-sky:hover { transform: translateY(-2px); }
+  .btn-outline {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--gray);
+  }
+  .btn-outline:hover { border-color: var(--sky); color: var(--sky); }
+  .btn-danger {
+    background: rgba(220,50,50,0.2);
+    border: 1px solid rgba(220,50,50,0.4);
+    color: #ff6b6b;
+  }
+  .btn-danger:hover { background: rgba(220,50,50,0.35); }
+  .btn-sm { padding: 8px 16px; font-size: 13px; }
+
+  .error-msg {
+    background: rgba(220,50,50,0.15);
+    border: 1px solid rgba(220,50,50,0.3);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: #ff8080;
+    font-size: 13px;
+    margin-bottom: 16px;
+    display: none;
+  }
+  .error-msg.show { display: block; }
+
+  /* ===== MAIN APP ===== */
+  #main-page { flex-direction: column; }
+
+  /* TOPBAR */
+  .topbar {
+    background: rgba(10,18,40,0.9);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    backdrop-filter: blur(20px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .topbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .topbar-emblem {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, var(--navy), var(--sky));
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    border: 1px solid var(--sky);
+  }
+  .topbar-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: var(--white);
+  }
+  .topbar-name span { color: var(--orange); }
+
+  .topbar-user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .user-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--sky), var(--navy));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    border: 2px solid var(--sky);
+  }
+  .user-name { font-size: 14px; font-weight: 600; color: var(--white); }
+  .user-role { font-size: 11px; color: var(--orange); text-transform: uppercase; letter-spacing: 1px; }
+
+  /* LAYOUT */
+  .app-layout {
+    display: flex;
+    flex: 1;
+    min-height: calc(100vh - 64px);
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 220px;
+    background: rgba(10,18,40,0.6);
+    border-right: 1px solid var(--border);
+    padding: 20px 12px;
+    backdrop-filter: blur(20px);
+    flex-shrink: 0;
+  }
+  .nav-section-title {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gray);
+    padding: 0 12px;
+    margin: 16px 0 8px;
+  }
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--gray);
+    margin-bottom: 2px;
+  }
+  .nav-item:hover { background: rgba(77,166,216,0.08); color: var(--white); }
+  .nav-item.active { background: rgba(77,166,216,0.15); color: var(--sky); border: 1px solid rgba(77,166,216,0.2); }
+  .nav-item .icon { font-size: 18px; width: 24px; text-align: center; }
+
+  /* CONTENT */
+  .content {
+    flex: 1;
+    padding: 28px;
+    overflow-y: auto;
+  }
+
+  .section { display: none; }
+  .section.active { display: block; }
+
+  .section-header {
+    margin-bottom: 24px;
+  }
+  .section-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: var(--white);
+  }
+  .section-title span { color: var(--orange); }
+  .section-desc { color: var(--gray); font-size: 14px; margin-top: 4px; }
+
+  /* CARDS */
+  .card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    backdrop-filter: blur(10px);
+  }
+  .card-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--white);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* STATS */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .stat-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.2s;
+  }
+  .stat-card:hover { transform: translateY(-3px); }
+  .stat-num {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--sky);
+    line-height: 1;
+  }
+  .stat-label { font-size: 12px; color: var(--gray); margin-top: 4px; letter-spacing: 1px; text-transform: uppercase; }
+
+  /* GRID */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+
+  /* TABLE */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    text-align: left;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--gray);
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 12px 16px;
+    font-size: 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    vertical-align: middle;
+  }
+  tr:hover td { background: rgba(255,255,255,0.03); }
+
+  /* BADGE */
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .badge-active { background: rgba(50,200,100,0.15); color: #50c878; border: 1px solid rgba(50,200,100,0.3); }
+  .badge-pending { background: rgba(232,118,42,0.15); color: var(--orange); border: 1px solid rgba(232,118,42,0.3); }
+  .badge-paid { background: rgba(77,166,216,0.15); color: var(--sky); border: 1px solid rgba(77,166,216,0.3); }
+  .badge-unpaid { background: rgba(220,50,50,0.15); color: #ff6b6b; border: 1px solid rgba(220,50,50,0.3); }
+
+  /* PROFILE */
+  .profile-header {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 24px;
+  }
+  .profile-avatar-lg {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--sky), var(--navy));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 32px;
+    font-weight: 800;
+    border: 3px solid var(--sky);
+    box-shadow: 0 0 20px rgba(77,166,216,0.3);
+    flex-shrink: 0;
+  }
+  .profile-info .name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--white);
+  }
+  .profile-info .role { color: var(--orange); font-size: 13px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
+  .profile-info .id { color: var(--gray); font-size: 13px; margin-top: 4px; }
+
+  .info-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+  .info-row:last-child { border-bottom: none; }
+  .info-label { color: var(--gray); font-size: 13px; }
+  .info-value { color: var(--white); font-size: 13px; font-weight: 500; }
+
+  /* CONTROL NUMBER */
+  .ctrl-box {
+    background: rgba(77,166,216,0.05);
+    border: 2px dashed rgba(77,166,216,0.3);
+    border-radius: 16px;
+    padding: 32px;
+    text-align: center;
+  }
+  .ctrl-number {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 42px;
+    font-weight: 800;
+    letter-spacing: 6px;
+    color: var(--sky);
+    background: rgba(77,166,216,0.1);
+    padding: 16px 32px;
+    border-radius: 12px;
+    border: 1px solid rgba(77,166,216,0.3);
+    display: inline-block;
+    margin: 16px 0;
+    font-variant-numeric: tabular-nums;
+  }
+  .ctrl-note { color: var(--gray); font-size: 13px; margin-top: 8px; }
+
+  /* MEMBER CARDS */
+  .member-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: all 0.2s;
+  }
+  .member-card:hover { border-color: rgba(77,166,216,0.3); transform: translateY(-2px); }
+  .member-card .avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--sky), var(--navy));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .member-card .info .name { font-weight: 600; font-size: 15px; }
+  .member-card .info .dept { color: var(--gray); font-size: 12px; margin-top: 2px; }
+  .member-card .actions { margin-left: auto; display: flex; gap: 8px; }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+    padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: #0f1a3a;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px;
+    width: 100%;
+    max-width: 480px;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: slideUp 0.3s ease;
+  }
+  .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+  .modal-title { font-family: 'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 800; color: var(--white); }
+  .modal-close { background: none; border: none; color: var(--gray); cursor: pointer; font-size: 22px; line-height: 1; }
+  .modal-close:hover { color: var(--white); }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: rgba(50,200,100,0.15);
+    border: 1px solid rgba(50,200,100,0.4);
+    border-radius: 12px;
+    padding: 14px 20px;
+    color: #50c878;
+    font-size: 14px;
+    font-weight: 600;
+    z-index: 2000;
+    display: none;
+    animation: slideUp 0.3s ease;
+    max-width: 320px;
+  }
+  .toast.show { display: block; }
+  .toast.error { background: rgba(220,50,50,0.15); border-color: rgba(220,50,50,0.4); color: #ff6b6b; }
+
+  .divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+
+  @media (max-width: 768px) {
+    .sidebar { width: 60px; }
+    .nav-item span:not(.icon) { display: none; }
+    .nav-section-title { display: none; }
+    .grid-2 { grid-template-columns: 1fr; }
+    .topbar-name { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="bg-pattern"></div>
+<div class="bg-grid"></div>
+
+<div id="app">
+
+  <!-- ===== LOGIN PAGE ===== -->
+  <div id="login-page" class="page active">
+    <div class="login-card">
+      <div class="login-logo">
+        <div class="logo-emblem">✈️</div>
+        <div class="org-name">ZASA</div>
+        <div class="org-sub">Zanzibar Aerospace Students Association</div>
+      </div>
+      <div class="login-title">Karibu Tena</div>
+      <div class="login-subtitle">Ingia kwa akaunti yako ya ZASA</div>
+      
+      <!-- Account Type Selection -->
+      <div style="display:flex;gap:12px;margin-bottom:24px;border-bottom:1px solid var(--border);padding-bottom:16px" id="login-type-selector">
+        <button class="btn btn-sky btn-sm" style="flex:1;background:rgba(77,166,216,0.15);border:1px solid rgba(77,166,216,0.3)" onclick="setLoginMode('existing')">👤 Akaunti Iliyowepo</button>
+        <button class="btn btn-outline btn-sm" style="flex:1" onclick="setLoginMode('new')">➕ Akaunti Mpya</button>
+      </div>
+
+      <!-- Existing Account Login -->
+      <div id="login-existing-form">
+        <div class="error-msg" id="login-error">Jina la mtumiaji au nywila si sahihi.</div>
+        <div class="form-group">
+          <label>Jina la Mtumiaji (Username)</label>
+          <input type="text" id="login-username" placeholder="Andika username yako" />
+        </div>
+        <div class="form-group">
+          <label>Nywila (Password)</label>
+          <input type="password" id="login-password" placeholder="Andika nywila yako" />
+        </div>
+        <button class="btn btn-primary" onclick="doLogin()">🔐 Ingia</button>
+      </div>
+
+      <!-- New Account Signup -->
+      <div id="login-new-form" style="display:none">
+        <div class="error-msg" id="signup-error"></div>
+        <div class="form-group">
+          <label>Jina Kamili</label>
+          <input type="text" id="signup-fullname" placeholder="Jina lako kamili" />
+        </div>
+        <div class="form-group">
+          <label>Jina la Mtumiaji (Username)</label>
+          <input type="text" id="signup-username" placeholder="Chagua username" />
+        </div>
+        <div class="form-group">
+          <label>Nywila (Password)</label>
+          <input type="password" id="signup-password" placeholder="Nywila yako" />
+        </div>
+        <div class="form-group">
+          <label>Barua Pepe</label>
+          <input type="email" id="signup-email" placeholder="email@example.com" />
+        </div>
+        <div class="form-group">
+          <label>Nambari ya Simu</label>
+          <input type="text" id="signup-phone" placeholder="+255..." />
+        </div>
+        <div class="form-group">
+          <label>Idara / Kozi</label>
+          <input type="text" id="signup-dept" placeholder="Mfano: Aviation Management" />
+        </div>
+        <button class="btn btn-primary" onclick="doSignup()">✅ Tengeneza Akaunti</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MAIN APP ===== -->
+  <div id="main-page" class="page">
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div class="topbar-brand">
+        <div class="topbar-emblem">✈️</div>
+        <div>
+          <div class="topbar-name">ZA<span>SA</span></div>
+        </div>
+      </div>
+      <div class="topbar-user">
+        <button class="btn btn-outline btn-sm" id="lang-toggle" onclick="toggleLanguage()">🌐 Kiswahili</button>
+        <div>
+          <div class="user-name" id="topbar-name">—</div>
+          <div class="user-role" id="topbar-role">—</div>
+        </div>
+        <div class="user-avatar" id="topbar-avatar">?</div>
+        <button class="btn btn-outline btn-sm" onclick="doLogout()">Toka</button>
+      </div>
+    </div>
+
+    <div class="app-layout">
+      <!-- SIDEBAR -->
+      <div class="sidebar">
+        <div class="nav-section-title">Menyu</div>
+        <div class="nav-item active" onclick="showSection('dashboard')">
+          <span class="icon">📊</span><span>Dashibodi</span>
+        </div>
+        <div class="nav-item" onclick="showSection('profile')">
+          <span class="icon">👤</span><span>Profaili Yangu</span>
+        </div>
+        <div class="nav-item" onclick="showSection('control-number')">
+          <span class="icon">🔢</span><span>Namba ya Malipo</span>
+        </div>
+        <div class="nav-item admin-only" onclick="showSection('members')">
+          <span class="icon">👥</span><span>Wanachama</span>
+        </div>
+        <div class="nav-item admin-only" onclick="showSection('payments')">
+          <span class="icon">💳</span><span>Malipo</span>
+        </div>
+        <div class="nav-item admin-only" onclick="showSection('add-member')">
+          <span class="icon">➕</span><span>Ongeza Mwanachama</span>
+        </div>
+      </div>
+
+      <!-- CONTENT -->
+      <div class="content">
+
+        <!-- DASHBOARD -->
+        <div class="section active" id="section-dashboard">
+          <div class="section-header">
+            <div class="section-title">Dashibodi <span>ZASA</span></div>
+            <div class="section-desc">Muhtasari wa shirika lako</div>
+          </div>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-num" id="stat-members">0</div>
+              <div class="stat-label">Wanachama</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-num" id="stat-paid">0</div>
+              <div class="stat-label">Wamelipa</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-num" id="stat-unpaid">0</div>
+              <div class="stat-label">Hawajalipa</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-num" id="stat-controls">0</div>
+              <div class="stat-label">Namba Zilizotolewa</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">📋 Shughuli za Hivi Karibuni</div>
+            <div id="recent-activity">
+              <div style="color: var(--gray); font-size: 14px; padding: 20px 0; text-align: center;">Hakuna shughuli bado.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MY PROFILE -->
+        <div class="section" id="section-profile">
+          <div class="section-header">
+            <div class="section-title">Profaili <span>Yangu</span></div>
+            <div class="section-desc">Taarifa zako za kibinafsi</div>
+          </div>
+          <div class="grid-2" style="gap:20px">
+            <div class="card">
+              <div id="profile-display"></div>
+            </div>
+            <div class="card">
+              <div class="card-title">✏️ Hariri Profaili</div>
+              <div class="form-group">
+                <label>Jina Kamili</label>
+                <input type="text" id="edit-fullname" />
+              </div>
+              <div class="form-group">
+                <label>Barua Pepe</label>
+                <input type="email" id="edit-email" />
+              </div>
+              <div class="form-group">
+                <label>Nambari ya Simu</label>
+                <input type="text" id="edit-phone" />
+              </div>
+              <div class="form-group">
+                <label>Idara / Kozi</label>
+                <input type="text" id="edit-dept" />
+              </div>
+              <button class="btn btn-sky btn-sm" onclick="saveProfile()">💾 Hifadhi Mabadiliko</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- CONTROL NUMBER -->
+        <div class="section" id="section-control-number">
+          <div class="section-header">
+            <div class="section-title">Namba ya <span>Malipo</span></div>
+            <div class="section-desc">Tengeneza namba yako ya kudhibiti (Control Number)</div>
+          </div>
+
+          <!-- PAYMENT STATUS ALERT -->
+          <div id="payment-status-alert" style="display:none;background:rgba(232,118,42,0.1);border:1px solid rgba(232,118,42,0.3);border-radius:12px;padding:16px;margin-bottom:20px">
+            <div style="color:var(--orange);font-weight:700;margin-bottom:8px">⚠️ Malipo Yanayohitajika Kwanzo</div>
+            <div style="color:var(--white);font-size:14px;margin-bottom:12px">
+              Kabla ya kuendelea na huduma yoyote, lazima kwanza kalipia TZS <strong>20,000/=</strong> kama stake ya kuanzia.
+            </div>
+          </div>
+
+          <div class="grid-2" style="gap:20px">
+            <div class="card">
+              <div class="card-title">🔢 Tengeneza Namba Mpya</div>
+              <div class="form-group">
+                <label>Aina ya Malipo</label>
+                <select id="ctrl-type" onchange="updateCtrlDefaults()">
+                  <option value="">-- Chagua Aina --</option>
+                  <option value="membership">Ada ya Uanachama (Membership Fee)</option>
+                  <option value="event">Usajili wa Tukio (Event Registration)</option>
+                </select>
+              </div>
+              <div class="form-group" id="event-group" style="display:none">
+                <label>Jina la Tukio</label>
+                <input type="text" id="ctrl-event" placeholder="Mfano: ZASA Annual Conference 2025" />
+              </div>
+              <div class="form-group">
+                <label>Kiasi cha Malipo (TZS)</label>
+                <input type="number" id="ctrl-amount" placeholder="Mfano: 10000" />
+              </div>
+              <button class="btn btn-primary" onclick="generateControlNumber()">⚡ Tengeneza Namba</button>
+            </div>
+            <div class="card">
+              <div class="card-title">📄 Namba Yako ya Malipo</div>
+              <div class="ctrl-box" id="ctrl-result-box">
+                <div style="color: var(--gray); font-size: 14px;">Bado hujatengeneza namba. Jaza fomu upande wa kushoto.</div>
+              </div>
+              <hr class="divider">
+              <div class="card-title" style="font-size:15px">📜 Historia ya Namba Zangu</div>
+              <div id="my-controls-list">
+                <div style="color: var(--gray); font-size: 13px;">Hakuna historia bado.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MEMBERS (ADMIN) -->
+        <div class="section" id="section-members">
+          <div class="section-header">
+            <div class="section-title">Orodha ya <span>Wanachama</span></div>
+            <div class="section-desc">Wasimamie wanachama wote wa ZASA</div>
+          </div>
+          <div id="members-grid" style="display:grid; gap:12px;"></div>
+        </div>
+
+        <!-- PAYMENTS (ADMIN) -->
+        <div class="section" id="section-payments">
+          <div class="section-header">
+            <div class="section-title">Rekodi ya <span>Malipo</span></div>
+            <div class="section-desc">Namba zote za kudhibiti zilizotolewa</div>
+          </div>
+          <div class="card">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Namba ya Kudhibiti</th>
+                    <th>Mwanachama</th>
+                    <th>Aina</th>
+                    <th>Kiasi</th>
+                    <th>Tarehe</th>
+                    <th>Hali</th>
+                    <th>Hatua</th>
+                  </tr>
+                </thead>
+                <tbody id="payments-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ADD MEMBER (ADMIN) -->
+        <div class="section" id="section-add-member">
+          <div class="section-header">
+            <div class="section-title">Ongeza <span>Mwanachama</span></div>
+            <div class="section-desc">Sajili mwanachama mpya wa ZASA</div>
+          </div>
+          <div class="card" style="max-width:500px">
+            <div class="card-title">📝 Taarifa za Mwanachama Mpya</div>
+            <div class="form-group">
+              <label>Jina Kamili</label>
+              <input type="text" id="new-fullname" placeholder="Jina na Ukoo" />
+            </div>
+            <div class="form-group">
+              <label>Jina la Mtumiaji (Username)</label>
+              <input type="text" id="new-username" placeholder="username" />
+            </div>
+            <div class="form-group">
+              <label>Nywila (Password)</label>
+              <input type="password" id="new-password" placeholder="Nywila ya awali" />
+            </div>
+            <div class="form-group">
+              <label>Barua Pepe</label>
+              <input type="email" id="new-email" placeholder="email@example.com" />
+            </div>
+            <div class="form-group">
+              <label>Nambari ya Simu</label>
+              <input type="text" id="new-phone" placeholder="+255..." />
+            </div>
+            <div class="form-group">
+              <label>Idara / Kozi</label>
+              <input type="text" id="new-dept" placeholder="Mfano: Aviation Management" />
+            </div>
+            <div class="error-msg" id="add-member-error"></div>
+            <button class="btn btn-primary" onclick="addMember()">✅ Ongeza Mwanachama</button>
+          </div>
+        </div>
+
+      </div><!-- /content -->
+    </div><!-- /app-layout -->
+  </div><!-- /main-page -->
+
+</div><!-- /app -->
+
+<!-- MODAL: View Member -->
+<div class="modal-overlay" id="member-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Taarifa za Mwanachama</div>
+      <button class="modal-close" onclick="closeModal('member-modal')">✕</button>
+    </div>
+    <div id="member-modal-content"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== LANGUAGE SYSTEM =====
+let currentLang = 'sw'; // sw = Kiswahili, en = English
+
+const translations = {
+  sw: {
+    welcome: 'Karibu Tena',
+    login: 'Ingia',
+    logout: 'Toka',
+    dashboard: 'Dashibodi',
+    profile: 'Profaili Yangu',
+    control: 'Namba ya Malipo',
+    members: 'Wanachama',
+    payments: 'Malipo',
+    addMember: 'Ongeza Mwanachama',
+    myProfile: 'Profaili Yangu',
+    myPaymentStatus: 'Hali ya Malipo Yangu',
+    membershipFee: 'Ada ya Uanachama',
+    eventRegistration: 'Usajili wa Tukio',
+    paymentRequired: '⚠️ MALIPO YANAYOHITAJIKA',
+    paymentNote: 'Tafadhali lipia ada ya uanachama kabla ya kuendelea.',
+    bankDetails: 'Taarifa za Benki',
+    accountName: 'Jina la Akaunti',
+    accountNumber: 'Nambari ya Akaunti',
+    bankName: 'Jina la Benki',
+    amountToPay: 'Kiasi Kinachohitajika',
+    generateNumber: '⚡ Tengeneza Namba',
+    generateBtn: '⚡ Tengeneza Namba',
+    paymentHistory: '📜 Historia ya Namba Zangu',
+    noHistory: 'Hakuna historia bado.',
+    paid: 'Imelipwa',
+    pending: 'Inasubiri',
+    admin: 'Msimamizi',
+    member: 'Mwanachama',
+    save: '💾 Hifadhi Mabadiliko',
+    edit: '✏️ Hariri Profaili',
+    fullName: 'Jina Kamili',
+    email: 'Barua Pepe',
+    phone: 'Nambari ya Simu',
+    department: 'Idara / Kozi',
+    username: 'Jina la Mtumiaji (Username)',
+    password: 'Nywila (Password)',
+    newMember: 'Taarifa za Mwanachama Mpya',
+    addNewMember: '✅ Ongeza Mwanachama',
+    allMembers: 'Orodha ya Wanachama',
+    allPayments: 'Rekodi ya Malipo',
+    controlNum: 'Namba ya Kudhibiti',
+    type: 'Aina',
+    amount: 'Kiasi',
+    date: 'Tarehe',
+    status: 'Hali',
+    action: 'Hatua',
+    confirm: '✅ Thibitisha',
+    view: '👁 Angalia',
+    delete: '🗑 Futa',
+    selectType: '-- Chagua Aina --',
+    eventName: 'Jina la Tukio',
+    paymentAmount: 'Kiasi cha Malipo (TZS)',
+    admin_login: 'Admin',
+    member_login: 'Mwanachama',
+    new_account: 'Akaunti Mpya',
+    existing_account: 'Akaunti Iliyowepo',
+    createAccount: 'Tengeneza Akaunti',
+    loginAccount: 'Ingia na Akaunti'
+  },
+  en: {
+    welcome: 'Welcome Back',
+    login: 'Login',
+    logout: 'Logout',
+    dashboard: 'Dashboard',
+    profile: 'My Profile',
+    control: 'Payment Number',
+    members: 'Members',
+    payments: 'Payments',
+    addMember: 'Add Member',
+    myProfile: 'My Profile',
+    myPaymentStatus: 'My Payment Status',
+    membershipFee: 'Membership Fee',
+    eventRegistration: 'Event Registration',
+    paymentRequired: '⚠️ PAYMENT REQUIRED',
+    paymentNote: 'Please pay membership fee before continuing.',
+    bankDetails: 'Bank Details',
+    accountName: 'Account Name',
+    accountNumber: 'Account Number',
+    bankName: 'Bank Name',
+    amountToPay: 'Amount to Pay',
+    generateNumber: '⚡ Generate Number',
+    generateBtn: '⚡ Generate Number',
+    paymentHistory: '📜 Payment History',
+    noHistory: 'No history yet.',
+    paid: 'Paid',
+    pending: 'Pending',
+    admin: 'Administrator',
+    member: 'Member',
+    save: '💾 Save Changes',
+    edit: '✏️ Edit Profile',
+    fullName: 'Full Name',
+    email: 'Email',
+    phone: 'Phone Number',
+    department: 'Department / Course',
+    username: 'Username',
+    password: 'Password',
+    newMember: 'New Member Information',
+    addNewMember: '✅ Add Member',
+    allMembers: 'Member List',
+    allPayments: 'Payment Records',
+    controlNum: 'Control Number',
+    type: 'Type',
+    amount: 'Amount',
+    date: 'Date',
+    status: 'Status',
+    action: 'Action',
+    confirm: '✅ Confirm',
+    view: '👁 View',
+    delete: '🗑 Delete',
+    selectType: '-- Select Type --',
+    eventName: 'Event Name',
+    paymentAmount: 'Payment Amount (TZS)',
+    admin_login: 'Admin',
+    member_login: 'Member',
+    new_account: 'New Account',
+    existing_account: 'Existing Account',
+    createAccount: 'Create Account',
+    loginAccount: 'Login to Account'
+  }
+};
+
+function t(key) {
+  return translations[currentLang][key] || translations['sw'][key] || key;
+}
+
+function toggleLanguage() {
+  currentLang = currentLang === 'sw' ? 'en' : 'sw';
+  document.getElementById('lang-toggle').textContent = currentLang === 'sw' ? '🌐 Kiswahili' : '🌐 English';
+  updatePageLanguage();
+}
+
+function updatePageLanguage() {
+  // Update login page
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    el.textContent = t(el.getAttribute('data-i18n'));
+  });
+  
+  // Reload current section
+  if (currentUser) {
+    const activeSection = document.querySelector('.section.active');
+    if (activeSection) {
+      const sectionId = activeSection.id.replace('section-', '');
+      showSection(sectionId);
+    }
+  }
+}
+
+// ===== DATA STORE =====
+let db = {
+  users: [
+    {
+      id: 'USR001',
+      username: 'admin',
+      password: 'admin123',
+      fullname: 'Admin ZASA',
+      email: 'admin@zasa.or.tz',
+      phone: '+255 777 000 001',
+      dept: 'Administration',
+      role: 'admin',
+      joined: '2024-01-01',
+      status: 'active',
+      paymentVerified: true // Admin doesn't need to pay
+    },
+    {
+      id: 'USR002',
+      username: 'ali',
+      password: 'ali123',
+      fullname: 'Ali Hassan Mwinyi',
+      email: 'ali@zasa.or.tz',
+      phone: '+255 712 345 678',
+      dept: 'Aviation Management',
+      role: 'member',
+      joined: '2024-03-15',
+      status: 'active',
+      paymentVerified: true, // This member already paid
+      paymentVerifiedDate: '2024-03-15'
+    }
+  ],
+  controlNumbers: [],
+  activity: [],
+  settings: {
+    membershipFee: 10000,
+    eventFee: 20000,
+    paymentLock: 20000, // Initial payment lock for new members
+    bankAccount: 'CRDB',
+    bankNumber: '10285801066',
+    bankAccountName: 'ZASA - Zanzibar Aerospace Students Association'
+  }
+};
+
+let currentUser = null;
+
+// ===== LOGIN MODES =====
+function setLoginMode(mode) {
+  const existingForm = document.getElementById('login-existing-form');
+  const newForm = document.getElementById('login-new-form');
+  const btns = document.querySelectorAll('#login-type-selector button');
+  
+  if (mode === 'existing') {
+    existingForm.style.display = 'block';
+    newForm.style.display = 'none';
+    btns[0].style.background = 'rgba(77,166,216,0.15)';
+    btns[0].style.border = '1px solid rgba(77,166,216,0.3)';
+    btns[1].style.background = 'transparent';
+    btns[1].style.border = '1px solid var(--border)';
+  } else {
+    existingForm.style.display = 'none';
+    newForm.style.display = 'block';
+    btns[0].style.background = 'transparent';
+    btns[0].style.border = '1px solid var(--border)';
+    btns[1].style.background = 'rgba(77,166,216,0.15)';
+    btns[1].style.border = '1px solid rgba(77,166,216,0.3)';
+  }
+}
+
+function doSignup() {
+  const fullname = document.getElementById('signup-fullname').value.trim();
+  const username = document.getElementById('signup-username').value.trim();
+  const password = document.getElementById('signup-password').value;
+  const email = document.getElementById('signup-email').value.trim();
+  const phone = document.getElementById('signup-phone').value.trim();
+  const dept = document.getElementById('signup-dept').value.trim();
+  const errEl = document.getElementById('signup-error');
+
+  if (!fullname || !username || !password || !email) {
+    errEl.textContent = 'Tafadhali jaza sehemu zote!';
+    errEl.classList.add('show');
+    return;
+  }
+  if (db.users.find(u => u.username === username)) {
+    errEl.textContent = 'Username hii tayari inatumika!';
+    errEl.classList.add('show');
+    return;
+  }
+  errEl.classList.remove('show');
+
+  const newUser = {
+    id: 'USR' + String(db.users.length + 1).padStart(3, '0'),
+    username, password, fullname, email, phone, dept,
+    role: 'member',
+    joined: new Date().toISOString().split('T')[0],
+    status: 'active',
+    paymentVerified: false,
+    paymentVerifiedDate: null
+  };
+  db.users.push(newUser);
+  currentUser = newUser;
+  addActivity(`Akaunti mpya ilitengenezwa: ${fullname}`);
+  
+  ['signup-fullname','signup-username','signup-password','signup-email','signup-phone','signup-dept'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  
+  saveData();
+  initApp();
+}
+
+// ===== LOGIN =====
+function doLogin() {
+  const username = document.getElementById('login-username').value.trim();
+  const password = document.getElementById('login-password').value;
+  const errEl = document.getElementById('login-error');
+
+  const user = db.users.find(u => u.username === username && u.password === password);
+  if (!user) {
+    errEl.classList.add('show');
+    return;
+  }
+  errEl.classList.remove('show');
+  currentUser = user;
+  initApp();
+}
+
+document.getElementById('login-password').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+
+function doLogout() {
+  currentUser = null;
+  document.getElementById('login-page').classList.add('active');
+  document.getElementById('main-page').classList.remove('active');
+  document.getElementById('login-username').value = '';
+  document.getElementById('login-password').value = '';
+}
+
+// ===== INIT APP =====
+function initApp() {
+  document.getElementById('login-page').classList.remove('active');
+  document.getElementById('main-page').classList.add('active');
+
+  document.getElementById('topbar-name').textContent = currentUser.fullname;
+  document.getElementById('topbar-role').textContent = currentUser.role === 'admin' ? t('admin') : t('member');
+  document.getElementById('topbar-avatar').textContent = currentUser.fullname[0];
+
+  // Show/hide admin nav items
+  document.querySelectorAll('.admin-only').forEach(el => {
+    el.style.display = currentUser.role === 'admin' ? 'flex' : 'none';
+  });
+
+  // Show payment alert if member hasn't verified payment (paid 20k)
+  if (currentUser.role === 'member' && !currentUser.paymentVerified) {
+    showPaymentAlert();
+  }
+
+  showSection('dashboard');
+  updateStats();
+  loadProfile();
+  loadMyControls();
+  loadData(); // Load data from localStorage
+  autoConfirmPayments(); // Check for auto-confirmation of payments
+}
+
+function showPaymentAlert() {
+  // Auto-generate control number for initial payment lock if not exists
+  const existingLockPayment = db.controlNumbers.find(c => 
+    c.userId === currentUser.id && 
+    parseInt(c.amount.replace(/,/g, '')) === db.settings.paymentLock &&
+    c.status === 'pending'
+  );
+  
+  let controlNum = existingLockPayment ? existingLockPayment.id : null;
+  
+  if (!controlNum) {
+    const randomNum = Math.floor(Math.random() * 900000000) + 100000000;
+    controlNum = randomNum.toString();
+    
+    const lockPayment = {
+      id: controlNum,
+      userId: currentUser.id,
+      userName: currentUser.fullname,
+      type: 'Usajili wa Kuanzia (Initial Payment Lock)',
+      event: '—',
+      amount: db.settings.paymentLock.toLocaleString(),
+      date: new Date().toLocaleDateString('sw-TZ'),
+      status: 'pending',
+      bankAccount: db.settings.bankNumber,
+      bankName: db.settings.bankAccount
+    };
+    db.controlNumbers.unshift(lockPayment);
+    addActivity(`${currentUser.fullname} alipakua namba ya payment lock: ${controlNum}`);
+    saveData();
+  }
+  
+  const alertHTML = `
+    <div style="position:fixed;top:64px;left:0;right:0;background:linear-gradient(135deg,rgba(232,118,42,0.2),rgba(220,50,50,0.15));border-bottom:2px solid var(--orange);padding:20px 28px;z-index:500;display:flex;align-items:flex-start;justify-content:space-between;backdrop-filter:blur(10px);gap:20px">
+      <div style="flex:1">
+        <div style="color:var(--orange);font-weight:700;font-size:14px;margin-bottom:8px">⚠️ MALIPO YANAYOHITAJIKA KWANZO</div>
+        <div style="color:var(--white);font-size:13px;margin-bottom:12px;line-height:1.5">
+          Tafadhali lipia TZS <strong>20,000/=</strong> kwa ajili ya kuanzia. Namba yako ya kudhibiti:
+        </div>
+        <div style="background:rgba(77,166,216,0.15);border:1px solid rgba(77,166,216,0.3);border-radius:10px;padding:12px;margin-bottom:10px">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:800;letter-spacing:4px;color:var(--sky);text-align:center;margin-bottom:8px">${controlNum}</div>
+          <div style="font-size:11px;color:var(--gray);text-align:center;letter-spacing:1px">NAMBA YA KUDHIBITI</div>
+        </div>
+        <div style="background:rgba(232,118,42,0.1);border:1px solid rgba(232,118,42,0.3);border-radius:10px;padding:10px;font-size:12px;margin-bottom:12px">
+          <div style="color:var(--orange);font-weight:600;margin-bottom:6px">📱 Benki: CRDB</div>
+          <div style="color:var(--white);font-family:'Barlow Condensed',sans-serif;letter-spacing:2px;font-weight:700">${db.settings.bankNumber}</div>
+        </div>
+        <div style="font-size:12px;color:var(--gray);line-height:1.5">
+          <strong style="color:var(--sky)">ℹ️ Baada ya kulipa:</strong> Malipo itakuwa <strong>auto-confirmed</strong> ndio uendelee.
+        </div>
+      </div>
+      <button class="btn btn-outline" style="margin-top:0;white-space:nowrap" onclick="document.querySelector('[style*=top:64px]').remove()">✕ Funga</button>
+    </div>
+  `;
+  document.body.insertAdjacentHTML('beforeend', alertHTML);
+}
+
+// Auto-confirmation checker - marks payment as paid automatically
+function autoConfirmPayments() {
+  if (!currentUser || currentUser.role === 'admin') return;
+  
+  // Check if member has unpaid lock payment
+  const lockPayment = db.controlNumbers.find(c => 
+    c.userId === currentUser.id && 
+    parseInt(c.amount.replace(/,/g, '')) === db.settings.paymentLock &&
+    c.status === 'pending'
+  );
+  
+  if (lockPayment) {
+    // Auto-confirm after 3 seconds
+    setTimeout(() => {
+      const idx = db.controlNumbers.findIndex(c => c.id === lockPayment.id);
+      if (idx !== -1 && db.controlNumbers[idx].status === 'pending') {
+        // Mark payment as paid
+        db.controlNumbers[idx].status = 'paid';
+        
+        // Update user as verified
+        const userIdx = db.users.findIndex(u => u.id === lockPayment.userId);
+        if (userIdx !== -1) {
+          db.users[userIdx].paymentVerified = true;
+          db.users[userIdx].paymentVerifiedDate = new Date().toISOString().split('T')[0];
+          if (currentUser.id === lockPayment.userId) {
+            currentUser.paymentVerified = true;
+            currentUser.paymentVerifiedDate = new Date().toISOString().split('T')[0];
+            // Remove alert
+            const alert = document.querySelector('[style*=top:64px]');
+            if (alert) alert.remove();
+            addActivity(`${currentUser.fullname} - Malipo yamethibitishwa automatically`);
+            saveData();
+            showToast('✅ Malipo yamethibitishwa! Sasa unaweza kuendelea.');
+          }
+        }
+      }
+    }, 3000);
+  }
+}
+
+// ===== NAVIGATION =====
+function showSection(name) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('section-' + name).classList.add('active');
+
+  // highlight nav
+  document.querySelectorAll('.nav-item').forEach(item => {
+    if (item.getAttribute('onclick') && item.getAttribute('onclick').includes(name)) {
+      item.classList.add('active');
+    }
+  });
+
+  if (name === 'members') loadMembers();
+  if (name === 'payments') loadPayments();
+  if (name === 'profile') loadProfile();
+  if (name === 'control-number') loadMyControls();
+  if (name === 'dashboard') { updateStats(); loadActivity(); }
+}
+
+// ===== STATS =====
+function updateStats() {
+  const members = db.users.filter(u => u.role !== 'admin');
+  const paid = db.controlNumbers.filter(c => c.status === 'paid').map(c => c.userId);
+  const uniquePaid = [...new Set(paid)].length;
+
+  document.getElementById('stat-members').textContent = members.length;
+  document.getElementById('stat-paid').textContent = uniquePaid;
+  document.getElementById('stat-unpaid').textContent = members.length - uniquePaid;
+  document.getElementById('stat-controls').textContent = db.controlNumbers.length;
+}
+
+// ===== ACTIVITY =====
+function addActivity(msg) {
+  db.activity.unshift({ msg, time: new Date().toLocaleString('sw-TZ') });
+}
+function loadActivity() {
+  const el = document.getElementById('recent-activity');
+  if (!db.activity.length) {
+    el.innerHTML = '<div style="color:var(--gray);font-size:14px;padding:20px 0;text-align:center;">Hakuna shughuli bado.</div>';
+    return;
+  }
+  el.innerHTML = db.activity.slice(0, 6).map(a => `
+    <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.05);font-size:13px;">
+      <span>${a.msg}</span>
+      <span style="color:var(--gray)">${a.time}</span>
+    </div>
+  `).join('');
+}
+
+// ===== PROFILE =====
+function loadProfile() {
+  const u = currentUser;
+  document.getElementById('edit-fullname').value = u.fullname;
+  document.getElementById('edit-email').value = u.email;
+  document.getElementById('edit-phone').value = u.phone;
+  document.getElementById('edit-dept').value = u.dept;
+
+  document.getElementById('profile-display').innerHTML = `
+    <div class="profile-header">
+      <div class="profile-avatar-lg">${u.fullname[0]}</div>
+      <div class="profile-info">
+        <div class="name">${u.fullname}</div>
+        <div class="role">${u.role === 'admin' ? '⭐ Msimamizi' : '🎓 Mwanachama'}</div>
+        <div class="id">ID: ${u.id}</div>
+      </div>
+    </div>
+    <div class="info-row"><span class="info-label">Username</span><span class="info-value">${u.username}</span></div>
+    <div class="info-row"><span class="info-label">Barua Pepe</span><span class="info-value">${u.email}</span></div>
+    <div class="info-row"><span class="info-label">Simu</span><span class="info-value">${u.phone}</span></div>
+    <div class="info-row"><span class="info-label">Idara</span><span class="info-value">${u.dept}</span></div>
+    <div class="info-row"><span class="info-label">Alijiunga</span><span class="info-value">${u.joined}</span></div>
+    <div class="info-row"><span class="info-label">Hali</span><span class="info-value"><span class="badge badge-active">Hai</span></span></div>
+  `;
+}
+
+function saveProfile() {
+  const idx = db.users.findIndex(u => u.id === currentUser.id);
+  db.users[idx].fullname = document.getElementById('edit-fullname').value;
+  db.users[idx].email = document.getElementById('edit-email').value;
+  db.users[idx].phone = document.getElementById('edit-phone').value;
+  db.users[idx].dept = document.getElementById('edit-dept').value;
+  currentUser = db.users[idx];
+  loadProfile();
+  document.getElementById('topbar-name').textContent = currentUser.fullname;
+  document.getElementById('topbar-avatar').textContent = currentUser.fullname[0];
+  addActivity(`${currentUser.fullname} alihifadhi mabadiliko ya profaili`);
+  saveData();
+  showToast('✅ Profaili imehifadhiwa!');
+}
+
+// ===== CONTROL NUMBER =====
+document.getElementById('ctrl-type').addEventListener('change', function() {
+  document.getElementById('event-group').style.display = this.value === 'event' ? 'block' : 'none';
+});
+
+function updateCtrlDefaults() {
+  const type = document.getElementById('ctrl-type').value;
+  const eventGroup = document.getElementById('event-group');
+  const amountInput = document.getElementById('ctrl-amount');
+  const paymentAlert = document.getElementById('payment-status-alert');
+
+  if (type === 'membership') {
+    eventGroup.style.display = 'none';
+    amountInput.value = db.settings.membershipFee;
+    paymentAlert.style.display = 'none';
+  } else if (type === 'event') {
+    eventGroup.style.display = 'block';
+    amountInput.value = db.settings.eventFee;
+    // Show alert if membership not paid
+    if (currentUser.role === 'member' && !currentUser.paymentVerified) {
+      paymentAlert.style.display = 'block';
+    }
+  } else {
+    eventGroup.style.display = 'none';
+    amountInput.value = '';
+    paymentAlert.style.display = 'none';
+  }
+}
+
+function generateControlNumber() {
+  const type = document.getElementById('ctrl-type').value;
+  const amount = document.getElementById('ctrl-amount').value;
+  const event = document.getElementById('ctrl-event').value;
+
+  if (!type || !amount) { showToast('❌ Tafadhali jaza sehemu zote!', true); return; }
+  if (type === 'event' && !event) { showToast('❌ Andika jina la tukio!', true); return; }
+
+  // Generate control number with ONLY NUMBERS
+  const randomNum = Math.floor(Math.random() * 900000000) + 100000000;
+  const num = randomNum.toString();
+  
+  const ctrl = {
+    id: num,
+    userId: currentUser.id,
+    userName: currentUser.fullname,
+    type: type === 'membership' ? t('membershipFee') : t('eventRegistration'),
+    event: event || '—',
+    amount: parseInt(amount).toLocaleString(),
+    date: new Date().toLocaleDateString('sw-TZ'),
+    status: 'pending',
+    bankAccount: db.settings.bankNumber,
+    bankName: db.settings.bankAccount
+  };
+  db.controlNumbers.unshift(ctrl);
+  addActivity(`${currentUser.fullname} alitoa namba ya malipo: ${num}`);
+  updateStats();
+
+  document.getElementById('ctrl-result-box').innerHTML = `
+    <div style="color:var(--gray);font-size:12px;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px">${ctrl.type}</div>
+    <div class="ctrl-number">${num}</div>
+    <div style="color:var(--white);font-size:18px;font-weight:700;margin:8px 0">TZS ${ctrl.amount}/=</div>
+    <div class="ctrl-note">Tarehe: ${ctrl.date}</div>
+    ${ctrl.event !== '—' ? `<div class="ctrl-note">Tukio: ${ctrl.event}</div>` : ''}
+    <hr class="divider" style="margin:12px 0">
+    <div style="background:rgba(232,118,42,0.1);border:1px solid rgba(232,118,42,0.3);border-radius:10px;padding:12px;margin-top:12px">
+      <div style="color:var(--orange);font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px">📱 ${t('bankDetails')}</div>
+      <div style="font-size:13px;color:var(--white)">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+          <span style="color:var(--gray)">Bank:</span>
+          <span style="font-weight:600">${ctrl.bankName}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-family:'Barlow Condensed',sans-serif;letter-spacing:2px;font-weight:700">
+          <span style="color:var(--gray)">Account:</span>
+          <span style="color:var(--sky)">${ctrl.bankAccount}</span>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:12px">
+      <span class="badge badge-pending">${t('pending')}</span>
+    </div>
+  `;
+
+  loadMyControls();
+  saveData();
+  showToast('✅ Namba ya malipo imetolewa!');
+}
+
+function loadMyControls() {
+  const myControls = db.controlNumbers.filter(c => c.userId === currentUser.id);
+  const el = document.getElementById('my-controls-list');
+  if (!myControls.length) {
+    el.innerHTML = '<div style="color:var(--gray);font-size:13px;">Hakuna historia bado.</div>';
+    return;
+  }
+  el.innerHTML = myControls.slice(0, 5).map(c => `
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.05);font-size:13px;">
+      <div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--sky);letter-spacing:2px">${c.id}</div>
+        <div style="color:var(--gray);font-size:11px">${c.type} • ${c.date}</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-weight:600">TZS ${c.amount}</div>
+        <span class="badge ${c.status === 'paid' ? 'badge-paid' : 'badge-pending'}">${c.status === 'paid' ? 'Imelipwa' : 'Inasubiri'}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ===== MEMBERS (ADMIN) =====
+function loadMembers() {
+  const members = db.users.filter(u => u.role !== 'admin');
+  const el = document.getElementById('members-grid');
+  if (!members.length) {
+    el.innerHTML = '<div style="color:var(--gray)">Hakuna wanachama bado.</div>';
+    return;
+  }
+  el.innerHTML = members.map(u => `
+    <div class="member-card">
+      <div class="avatar">${u.fullname[0]}</div>
+      <div class="info">
+        <div class="name">${u.fullname}</div>
+        <div class="dept">${u.dept} • ${u.id}</div>
+      </div>
+      <div class="actions">
+        <button class="btn btn-sky btn-sm" onclick="viewMember('${u.id}')">👁 Angalia</button>
+        <button class="btn btn-danger btn-sm" onclick="removeMember('${u.id}')">🗑 Futa</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function viewMember(id) {
+  const u = db.users.find(u => u.id === id);
+  const ctrls = db.controlNumbers.filter(c => c.userId === id);
+  document.getElementById('member-modal-content').innerHTML = `
+    <div class="profile-header" style="margin-bottom:16px">
+      <div class="profile-avatar-lg" style="width:60px;height:60px;font-size:24px">${u.fullname[0]}</div>
+      <div class="profile-info">
+        <div class="name">${u.fullname}</div>
+        <div class="role">${u.dept}</div>
+        <div class="id">ID: ${u.id}</div>
+      </div>
+    </div>
+    <div class="info-row"><span class="info-label">Username</span><span class="info-value">${u.username}</span></div>
+    <div class="info-row"><span class="info-label">Barua Pepe</span><span class="info-value">${u.email}</span></div>
+    <div class="info-row"><span class="info-label">Simu</span><span class="info-value">${u.phone}</span></div>
+    <div class="info-row"><span class="info-label">Alijiunga</span><span class="info-value">${u.joined}</span></div>
+    <hr class="divider">
+    <div style="font-size:14px;font-weight:700;margin-bottom:8px;">Namba za Malipo (${ctrls.length})</div>
+    ${ctrls.length ? ctrls.map(c => `
+      <div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.05)">
+        <span style="color:var(--sky);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px">${c.id}</span>
+        <span class="badge ${c.status === 'paid' ? 'badge-paid' : 'badge-pending'}">${c.status === 'paid' ? 'Imelipwa' : 'Inasubiri'}</span>
+      </div>
+    `).join('') : '<div style="color:var(--gray);font-size:13px">Hakuna namba bado.</div>'}
+  `;
+  document.getElementById('member-modal').classList.add('open');
+}
+
+function removeMember(id) {
+  if (!confirm('Una uhakika wa kufuta mwanachama huyu?')) return;
+  db.users = db.users.filter(u => u.id !== id);
+  addActivity('Mwanachama amefutwa na admin');
+  loadMembers();
+  updateStats();
+  saveData();
+  showToast('🗑 Mwanachama amefutwa.');
+}
+
+// ===== PAYMENTS (ADMIN) =====
+function loadPayments() {
+  const tbody = document.getElementById('payments-tbody');
+  if (!db.controlNumbers.length) {
+    tbody.innerHTML = '<tr><td colspan="7" style="color:var(--gray);text-align:center;padding:20px">Hakuna namba bado.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = db.controlNumbers.map(c => `
+    <tr>
+      <td style="font-family:'Barlow Condensed',sans-serif;letter-spacing:2px;color:var(--sky)">${c.id}</td>
+      <td>${c.userName}</td>
+      <td>${c.type}</td>
+      <td>TZS ${c.amount}</td>
+      <td>${c.date}</td>
+      <td><span class="badge ${c.status === 'paid' ? 'badge-paid' : 'badge-pending'}">${c.status === 'paid' ? 'Imelipwa' : 'Inasubiri'}</span></td>
+      <td>
+        ${c.status !== 'paid'
+          ? `<button class="btn btn-sky btn-sm" onclick="markPaid('${c.id}')">✅ Thibitisha</button>`
+          : '<span style="color:var(--gray);font-size:12px">—</span>'}
+      </td>
+    </tr>
+  `).join('');
+}
+
+function markPaid(id) {
+  const idx = db.controlNumbers.findIndex(c => c.id === id);
+  const ctrl = db.controlNumbers[idx];
+  ctrl.status = 'paid';
+  
+  // If the initial payment lock (20000) is paid, mark user as verified
+  if (ctrl.amount === db.settings.paymentLock.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")) {
+    const userIdx = db.users.findIndex(u => u.id === ctrl.userId);
+    if (userIdx !== -1) {
+      db.users[userIdx].paymentVerified = true;
+      db.users[userIdx].paymentVerifiedDate = new Date().toISOString().split('T')[0];
+      // If this is current user, update
+      if (currentUser.id === ctrl.userId) {
+        currentUser.paymentVerified = true;
+        currentUser.paymentVerifiedDate = new Date().toISOString().split('T')[0];
+      }
+    }
+  }
+  
+  addActivity(`Malipo yamethibitishwa kwa namba: ${id}`);
+  loadPayments();
+  updateStats();
+  saveData();
+  showToast('✅ Malipo yamethibitishwa!');
+}
+
+// ===== ADD MEMBER =====
+function addMember() {
+  const fullname = document.getElementById('new-fullname').value.trim();
+  const username = document.getElementById('new-username').value.trim();
+  const password = document.getElementById('new-password').value;
+  const email = document.getElementById('new-email').value.trim();
+  const phone = document.getElementById('new-phone').value.trim();
+  const dept = document.getElementById('new-dept').value.trim();
+  const errEl = document.getElementById('add-member-error');
+
+  if (!fullname || !username || !password) {
+    errEl.textContent = 'Jaza sehemu zote zinazohitajika!';
+    errEl.classList.add('show');
+    return;
+  }
+  if (db.users.find(u => u.username === username)) {
+    errEl.textContent = 'Username hii tayari inatumika!';
+    errEl.classList.add('show');
+    return;
+  }
+  errEl.classList.remove('show');
+
+  const newUser = {
+    id: 'USR' + String(db.users.length + 1).padStart(3, '0'),
+    username, password, fullname, email, phone, dept,
+    role: 'member',
+    joined: new Date().toISOString().split('T')[0],
+    status: 'active',
+    paymentVerified: false,
+    paymentVerifiedDate: null
+  };
+  db.users.push(newUser);
+  addActivity(`Mwanachama mpya ameongezwa: ${fullname}`);
+  updateStats();
+  saveData();
+
+  ['new-fullname','new-username','new-password','new-email','new-phone','new-dept'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  showToast(`✅ ${fullname} ameongezwa kwa mafanikio!`);
+}
+
+// ===== MODAL =====
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('open');
+  });
+});
+
+// ===== LOCAL STORAGE =====
+function saveData() {
+  try {
+    localStorage.setItem('zasa_db', JSON.stringify(db));
+    localStorage.setItem('zasa_activity', JSON.stringify(db.activity));
+  } catch (e) {
+    console.error('Error saving data:', e);
+  }
+}
+
+function loadData() {
+  try {
+    const savedDB = localStorage.getItem('zasa_db');
+    const savedActivity = localStorage.getItem('zasa_activity');
+    
+    if (savedDB) {
+      const parsedDB = JSON.parse(savedDB);
+      // Merge saved data with current db
+      db.users = parsedDB.users || db.users;
+      db.controlNumbers = parsedDB.controlNumbers || db.controlNumbers;
+      db.settings = parsedDB.settings || db.settings;
+    }
+    
+    if (savedActivity) {
+      db.activity = JSON.parse(savedActivity);
+    }
+  } catch (e) {
+    console.error('Error loading data:', e);
+  }
+}
+
+// Load data on page load
+loadData();
+
+// ===== TOAST =====
+function showToast(msg, isError = false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (isError ? ' error' : '');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>
